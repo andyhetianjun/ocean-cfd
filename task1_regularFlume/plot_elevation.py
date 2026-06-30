@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Plot surface elevation at the single x=10m gauge with SWL and +/-A reference lines.
+Plot surface elevation deviation from SWL at the single x=10m gauge with +/-A reference lines.
 """
 import matplotlib
 matplotlib.use("Agg")
@@ -30,17 +30,17 @@ with open(DATA_FILE) as f:
         eta.append(float(parts[1]))
 
 time = np.array(time)
-eta = np.array(eta)
+eta = np.array(eta) - SWL   # subtract SWL: deviation from still water level
 
 fig, ax = plt.subplots(figsize=(10, 5))
-ax.plot(time, eta, color="tab:blue", linewidth=1.2, label="Surface elevation (x=10m)")
-ax.axhline(SWL, color="black", linewidth=0.8, linestyle="-", label="SWL")
-ax.axhline(SWL + A, color="tab:red", linewidth=0.8, linestyle="--", label=f"+A ({SWL+A:.3f} m)")
-ax.axhline(SWL - A, color="tab:red", linewidth=0.8, linestyle="--", label=f"-A ({SWL-A:.3f} m)")
+ax.plot(time, eta, color="tab:blue", linewidth=1.2, label="Surface elevation deviation (x=10m)")
+ax.axhline( A, color="tab:red", linewidth=0.8, linestyle="--", label=f"+A ({A:.3f} m)")
+ax.axhline(-A, color="tab:red", linewidth=0.8, linestyle="--", label=f"-A ({-A:.3f} m)")
+ax.axhline(0, color="black", linewidth=0.6, linestyle="-")   # zero line (SWL reference)
 
 ax.set_xlabel("Time (s)")
-ax.set_ylabel("Surface elevation (m)")
-ax.set_title("Task 1: Regular Wave Surface Elevation at x=10m (gauge_center)")
+ax.set_ylabel("Surface elevation deviation from SWL (m)")
+ax.set_title("Task 1: Regular Wave Surface Elevation Deviation at x=10m (gauge_center)")
 ax.legend(loc="upper right", fontsize=8)
 ax.grid(True, alpha=0.3)
 ax.set_xlim(0, time.max())
