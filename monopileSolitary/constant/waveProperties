@@ -1,0 +1,56 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2412                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      waveProperties;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+seaLevel            0.4;
+seaLevelAsReference true;
+relaxationNames     ( );
+initializationName  inlet;
+inletCoeffs
+{
+    waveType            solitaryFirst;
+    height              0.10;
+    depth               0.4;
+    direction           ( 1 0 0 );
+    x0                  ( 0 0 0 );
+    GABCSettings
+    {
+        preProcessMethod    polynomialDefault;
+        defaultRange        "kh000_030";
+        shapeFunction       P03Celerity;
+        a0                  1.6207;
+        a1                  0;
+        a2                  -2.7209;
+        a3                  1.5429;
+        depth               0.4;
+    }
+}
+outletCoeffs
+{
+    waveType            potentialCurrent;
+    U                   ( 0 0 0 );
+    Tsoft               2;
+    GABCSettings
+    {
+        preProcessMethod    polynomialDefault;
+        defaultRange        "kh000_030";
+        shapeFunction       P03Celerity;
+        a0                  1.6207;
+        a1                  0;
+        a2                  -2.7209;
+        a3                  1.5429;
+        depth               0.4;
+    }
+}
+// ************************************************************************* //

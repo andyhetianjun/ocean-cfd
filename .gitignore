@@ -1,0 +1,51 @@
+# Reference/unused case folders - not your work
+regularWave/
+squarePile/
+
+# OpenFOAM generated timestep directories (numeric names, e.g. 0.25/, 9.5/, 12/)
+# Keeps 0/ and 0.org/ (initial conditions), excludes all other numeric dirs
+[1-9]*/
+0.[1-9]*/
+
+# Parallel decomposition output (regenerable via decomposePar)
+processor*/
+
+# Generated mesh (regenerable via blockMesh from blockMeshDict)
+# boundary file kept tracked - has patch type config, not just geometry
+**/constant/polyMesh/faces
+**/constant/polyMesh/faces.gz
+**/constant/polyMesh/neighbour
+**/constant/polyMesh/neighbour.gz
+**/constant/polyMesh/owner
+**/constant/polyMesh/owner.gz
+**/constant/polyMesh/points
+**/constant/polyMesh/points.gz
+**/constant/polyMesh/pointZones*
+**/constant/polyMesh/cellZones*
+**/constant/polyMesh/faceZones*
+**/constant/polyMesh/cellLevel*
+**/constant/polyMesh/pointLevel*
+**/constant/polyMesh/level0Edge*
+**/constant/polyMesh/surfaceIndex*
+**/constant/polyMesh/sets/
+
+# Auto-generated cell-center coordinate fields (not usually needed)
+**/0/C
+**/0/Cx
+**/0/Cy
+**/0/Cz
+
+# Post-processing output (regenerable by rerunning function objects)
+postProcessing/
+
+# Logs and temp files
+log.*
+*.log
+*.foam
+*.bak
+*.bak2
+*~
+
+# OS/editor cruft
+.DS_Store
+*.swp

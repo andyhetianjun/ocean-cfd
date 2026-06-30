@@ -1,0 +1,66 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2412                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version         2.0;
+    format          ascii;
+    location        "system";
+    class           dictionary;
+    object          controlDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+application     waveFoam;
+startFrom       startTime;
+startTime       0;
+stopAt          endTime;
+endTime         12;
+deltaT          0.001;
+writeControl    adjustableRunTime;
+writeInterval   0.1;
+purgeWrite      0;
+writeFormat     ascii;
+writePrecision  6;
+compression     off;
+timeFormat      general;
+timePrecision   6;
+runTimeModifiable yes;
+adjustTimeStep  yes;
+maxCo           0.5;
+maxAlphaCo      0.5;
+maxDeltaT       0.025;
+libs ( "libwaves2Foam.so" "libwaves2FoamGABC.so" );
+
+functions
+{
+    surfaceElevation
+    {
+        type                surfaceElevation;
+        libs                ( "libwaves2FoamSampling.so" );
+        writeControl        adjustableRunTime;
+        writeInterval       0.05;
+        setFormat           raw;
+        interpolationScheme cellPointFace;
+        fields              (alpha.water);
+        #includeIfPresent   "../waveGaugesNProbes/surfaceElevation_sets";
+    }
+
+    forces
+    {
+        type            forces;
+        libs            ("libforces.so");
+        writeControl    timeStep;
+        writeInterval   1;
+        patches         (cylinder);
+        rho             rhoInf;
+        rhoInf          1000;
+        CofR            (5 0 0);
+        log             true;
+    }
+}
+
+// ************************************************************************* //

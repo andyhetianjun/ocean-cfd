@@ -1,0 +1,11 @@
+sets
+(
+    gauge_center
+    {
+        type         face;
+        axis         z;
+        start        (10.0 2.0 0.0);
+        end          (10.0 2.0 1.2);
+        nPoints      100;
+    }
+);
