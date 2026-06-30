@@ -1,7 +1,7 @@
 import numpy as np
 
 # Cylinder parameters
-radius = 0.5      # radius in meters
+radius = 0.25      # radius in meters
 height = 1.2      # full tank height in meters
 n_points = 36     # number of points around circumference
 x_center = 5.0    # middle of tank length
