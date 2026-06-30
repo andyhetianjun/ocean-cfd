@@ -2,10 +2,10 @@ import numpy as np
 
 # Cylinder parameters
 radius = 0.5      # radius in meters
-height = 0.7      # full tank height in meters
+height = 1.2      # full tank height in meters
 n_points = 36     # number of points around circumference
 x_center = 5.0    # middle of tank length
-y_center = 0.0    # center of tank width
+y_center = 2.0    # center of tank width
 
 # Generate cylinder vertices
 triangles = []

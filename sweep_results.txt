@@ -1,0 +1,17 @@
+Case                   WaveType           H     T   H_inc  H_trans     Kt   Fx_peak    Fx_min
+-------------------------------------------------------------------------------------
+solitary_H005          solitaryFirst   0.05     -  0.6817   0.3249  0.477    156.11   -149.45
+solitary_H015          solitaryFirst   0.15     -  0.7000   0.6947  0.992    628.47   -429.96
+solitary_H020          solitaryFirst   0.20     -  0.7000   0.6994  0.999    900.37   -494.00
+regular_T2             stokesFirst     0.10   2.0  0.7000   0.7000  1.000    419.59   -276.12
+regular_T3             stokesFirst     0.10   3.0  0.7000   0.6997  1.000    439.46   -197.57
+regular_T5             stokesFirst     0.10   5.0  0.7000   0.7000  1.000    384.83   -131.64
+regular_T8             stokesFirst     0.10   8.0  0.7000   0.7001  1.000    250.65   -107.56
+stokes2_T3             stokesSecond    0.10   3.0  0.7000   0.6995  0.999    336.76   -245.73
+regular_T3_H005        stokesFirst     0.05   3.0     nan      nan    nan    193.31   -122.55
+regular_T3_H015        stokesFirst     0.15   3.0     nan      nan    nan    664.28   -237.40
+regular_T3_H020        stokesFirst     0.20   3.0     nan      nan    nan    792.76   -281.89
+chappelear_H005        chappelear1962  0.05     -     nan      nan    nan   1096.19    -27.24
+chappelear_H010        chappelear1962  0.10     -     nan      nan    nan   1134.34    -70.37
+chappelear_H015        chappelear1962  0.15     -     nan      nan    nan   1145.75   -125.04
+chappelear_H020        chappelear1962  0.20     -     nan      nan    nan   1155.51   -152.87
