@@ -22,41 +22,41 @@ FoamFile
     {
         type            patch;
         nFaces          1125;
-        startFace       1767308;
+        startFace       1767410;
     }
     outlet
     {
         type            patch;
         nFaces          1125;
-        startFace       1768433;
+        startFace       1768535;
     }
     bottom
     {
         type            wall;
         inGroups        1(wall);
         nFaces          6764;
-        startFace       1769558;
+        startFace       1769660;
     }
     atmosphere
     {
         type            patch;
         nFaces          6688;
-        startFace       1776322;
+        startFace       1776424;
     }
     frontAndBack
     {
         type            slip;
         inGroups        1(slip);
         nFaces          60000;
-        startFace       1783010;
+        startFace       1783112;
         faces           ( ( 0 1 5 4 ) ( 4 5 9 8 ) ( 8 9 13 12 ) ( 3 7 6 2 ) ( 7 11 10 6 ) ( 11 15 14 10 ) );
     }
     cylinder
     {
         type            wall;
         inGroups        1(wall);
-        nFaces          27760;
-        startFace       1843010;
+        nFaces          27748;
+        startFace       1843112;
     }
 )
 
