@@ -47,6 +47,10 @@ boundaryField
     {
         type            slip;
     }
+    cylinder
+    {
+        type            noSlip;
+    }
 }
 
 
