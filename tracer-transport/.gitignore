@@ -1,0 +1,14 @@
+# regenerable caches (velocity_450_cache.npz alone is 1.1GB)
+*.npz
+velocity_timeseries/
+
+# AZMP is public; document the source rather than redistribute
+data/*.csv
+
+# logs
+*.log
+nohup.out
+__pycache__/
+
+# animations are 300KB-8MB
+*.gif
