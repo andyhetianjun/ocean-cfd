@@ -30,7 +30,7 @@ inletCoeffs
     period              3;
     direction           ( 1 0 0 );
     phi                 0;
-    height              0.1;
+    height              0.05;
     waveNumber          (0.79522 0 0);
     omega               2.0944;
 

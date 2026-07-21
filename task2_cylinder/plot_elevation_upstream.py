@@ -5,10 +5,10 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 DATA_FILE = "postProcessing/surfaceElevation/0/surfaceElevation.dat"
-OUT_FILE = "task2_surface_elevation_upstream.png"
+OUT_FILE = "task2_H005_surface_elevation_upstream.png"
 
 SWL = 0.80
-H = 0.10
+H = 0.05
 A = H / 2.0
 
 time = []
@@ -36,7 +36,7 @@ ax.axhline(-A, color="tab:red", linewidth=0.8, linestyle="--", label=f"-A ({-A:.
 ax.axhline(0, color="black", linewidth=0.6, linestyle="-")
 ax.set_xlabel("Time (s)")
 ax.set_ylabel("Surface Elevation (m)")
-ax.set_title("Task 2: Surface Elevation Upstream of Cylinder (x=3m)")
+ax.set_title("Task 2 (H=0.05m): Surface Elevation Upstream of Cylinder (x=3m)")
 ax.legend(loc="upper right", fontsize=8)
 ax.grid(True, alpha=0.3)
 ax.set_xlim(0, time.max())
