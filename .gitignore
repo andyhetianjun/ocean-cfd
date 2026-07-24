@@ -49,3 +49,6 @@ log.*
 # OS/editor cruft
 .DS_Store
 *.swp
+# Binned velocity fields (regenerable via extract_timeseries_fine.py, ~42 GB)
+velocity_*/
+*.npz

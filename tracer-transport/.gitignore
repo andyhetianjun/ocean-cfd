@@ -12,3 +12,6 @@ __pycache__/
 
 # animations are 300KB-8MB
 *.gif
+
+# exception: 15 KB probe timeseries, basis for the shedding frequency measurement
+!wake_probes.npz
