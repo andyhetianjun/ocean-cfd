@@ -18,14 +18,14 @@ from matplotlib import patches
 from matplotlib.colors import Normalize
 from matplotlib.animation import FuncAnimation, PillowWriter
 
-VEL_DIR    = "velocity_resolved"
+VEL_DIR    = "/shared_folder/andyhe/project/tracer_transport/velocity_resolved"
 AZMP_CSV   = "data/AZMP_Discrete_Occupations_Sections.csv"
 NUTRIENT   = "nitrate"
 UNITS      = {"nitrate": "Nitrate (mmol m$^{-3}$)",
               "phosphate": "Phosphate (mmol m$^{-3}$)",
               "silicate": "Silicate (mmol m$^{-3}$)"}
 
-TIMESTEPS  = [str(t) for t in range(399, 596)]
+TIMESTEPS  = [str(t) for t in range(399, 405)]
 DT_S       = 1.0
 
 Z_SURFACE  = 20.0
@@ -35,6 +35,18 @@ AZMP_BOT   = 95.0
 
 CYL_X, CYL_Y, CYL_R = 46.0, 60.0, 4.0
 TRACER_NZ = 150
+
+# --- oil spill config -------------------------------------------------
+OIL_MASS_KG   = 85.0        # 0.1 m3 at 850 kg/m3
+OIL_RADIUS    = 20.0        # m
+OIL_OFFSET    = 24.0        # m, spill centre to pile centre
+BEARING       = "W"         # N NE E SE S SW W NW
+VERTICAL_MIX  = True        # case 1: w = 0.  case 2: True
+_BEAR = {"N": (0, 1), "NE": (0.7071, 0.7071), "E": (1, 0), "SE": (0.7071, -0.7071),
+         "S": (0, -1), "SW": (-0.7071, -0.7071), "W": (-1, 0), "NW": (-0.7071, 0.7071)}
+OIL_CX = CYL_X + _BEAR[BEARING][0] * OIL_OFFSET
+OIL_CY = CYL_Y + _BEAR[BEARING][1] * OIL_OFFSET
+# ----------------------------------------------------------------------
 
 
 def azmp_profile(csv_path, nutrient="nitrate"):
@@ -69,9 +81,28 @@ def build_initial_field(z, prof_depth, prof_val, ny, nx):
 def load_velocity(t):
     d = np.load(os.path.join(VEL_DIR, f"vel_{t}.npz"))
     g = d["grid_vel"]
+    w = np.nan_to_num(g[2]).astype(np.float32)
+    if not VERTICAL_MIX:
+        w = np.zeros_like(w)
     return (np.nan_to_num(g[0]).astype(np.float32),
             np.nan_to_num(g[1]).astype(np.float32),
-            np.nan_to_num(g[2]).astype(np.float32))
+            w)
+
+
+def build_oil_field(x, y, z_tr):
+    """Disc of oil in the surface cell. Returns (C in g/m3, diagnostics)."""
+    nz, ny, nx = len(z_tr), len(y), len(x)
+    dx = float(x[1] - x[0]); dy = float(y[1] - y[0]); dz = float(z_tr[1] - z_tr[0])
+    X, Y = np.meshgrid(x, y)
+    inside = ((X - OIL_CX)**2 + (Y - OIL_CY)**2) <= OIL_RADIUS**2
+    disc_area = np.pi * OIL_RADIUS**2
+    conc = (OIL_MASS_KG * 1000.0) / (disc_area * dz)      # g/m3
+    C = np.zeros((nz, ny, nx), dtype=np.float32)
+    C[-1][inside] = conc                                   # z_tr[-1] is the surface
+    grid_area = float(inside.sum()) * dx * dy
+    return C, {"conc_gm3": conc, "areal_gm2": conc * dz,
+               "frac_in_grid": grid_area / disc_area,
+               "mass_in_grid_kg": conc * grid_area * dz / 1000.0}
 
 
 def load_grid():
@@ -142,65 +173,44 @@ def evolve(C0, x, y, z_vel, z_tr, jobs):
             lst.append(s.astype(np.float32))
         del u, v, w, Xd, Yd, Zd
         if (n+1) % 20 == 0:
-            print(f"    step {n+1}/{len(TIMESTEPS)}", flush=True)
+            _dv = float(x[1]-x[0]) * float(y[1]-y[0]) * float(z_tr[1]-z_tr[0])
+            print(f"    step {n+1}/{len(TIMESTEPS)}  mass={C.sum()*_dv/1000.0:.4f} kg",
+                  flush=True)
     return slabs
-
-
-XZ_ASPECT     = 3.0
-CBAR_LABELPAD = 3
-CBAR_RANGES = {
-    ("xz", None): (2.0,  8.0,  1.0),
-    ("xy",  0):   (0.08, 0.24, 0.02),
-    ("xy", 10):   (0.0,  1.2,  0.2),
-    ("xy", 20):   (2.0,  6.0,  0.5),
-    ("xy", 30):   (7.0, 10.0,  0.5),
-    ("xy", 40):   (9.3, 10.0,  0.1),
-}
 
 
 def animate(mode, slice_val, slabs, x, y, z, filename, title_str="", fps=24, units_label=""):
     if mode == "xz":
         depth = Z_SURFACE - z                      # z=+20 surface -> depth 0; z=-20 -> depth 40
         H, V = np.meshgrid(x, depth)
-        figsize, xl, yl = (14, 3.5), "x (m)", "z (m)"
-        rkey = ("xz", None)
+        figsize, xl, yl = (8, 4), "x (m)", "z (m)"
     else:
         H, V = np.meshgrid(x, y)
         figsize, xl, yl = ((14, 3.5) if FULL_DOMAIN else (9, 4)), "x (m)", "y (m)"
-        rkey = ("xy", int(round((Z_SURFACE - slice_val) / 10.0)) * 10)
-    rng = CBAR_RANGES.get(rkey)
-    if rng is not None:
-        lo, hi, step = rng
-    else:
-        lo = float(min(s.min() for s in slabs)); hi = float(max(s.max() for s in slabs))
-        if hi - lo < 1e-9:
-            lo, hi = lo - 0.05*abs(lo) - 1e-6, hi + 0.05*abs(hi) + 1e-6
-        raw = (hi - lo) / 6.0
-        mag = 10.0 ** np.floor(np.log10(raw))
-        step = next(m * mag for m in (1, 2, 2.5, 5, 10) if raw <= m * mag)
-        lo = np.floor(lo / step) * step
-        hi = np.ceil(hi / step) * step
-    lo = max(lo, 0.0)
+    lo = float(min(s.min() for s in slabs)); hi = float(max(s.max() for s in slabs))
+    lo = max(lo, 0.0)   # oil concentration cannot be negative
+    if hi - lo < 1e-9:
+        lo, hi = lo - 0.05*abs(lo) - 1e-6, hi + 0.05*abs(hi) + 1e-6
+    raw = (hi - lo) / 6.0
+    mag = 10.0 ** np.floor(np.log10(raw))
+    step = next(m * mag for m in (1, 2, 2.5, 5, 10) if raw <= m * mag)
+    lo = np.floor(lo / step) * step
+    hi = np.ceil(hi / step) * step
     cticks = np.round(np.arange(lo, hi + step * 0.5, step), 10)
     norm = Normalize(vmin=lo, vmax=hi)
-    _tot = sum(s.size for s in slabs)
-    _clip = sum(int((s < lo).sum()) + int((s > hi).sum()) for s in slabs)
-    _ext = "both" if _clip else "neither"
-    print(f"      colour range {lo:.3f} .. {hi:.3f}   clipped {100.0*_clip/_tot:.2f}%", flush=True)
+    print(f"      colour range {lo:.3f} .. {hi:.3f}", flush=True)
     fig, ax = plt.subplots(figsize=figsize, constrained_layout=True)
     im = ax.pcolormesh(H, V, slabs[0], cmap="viridis", norm=norm, shading="auto")
     ax.set_xlabel(xl); ax.set_ylabel(yl)
     ax.set_title(title_str, fontsize=12, fontweight="bold", pad=8)
     cax = ax.inset_axes([1.02, 0, 0.015, 1], transform=ax.transAxes)
-    _cb = fig.colorbar(plt.cm.ScalarMappable(norm=norm, cmap="viridis"),
-                       cax=cax, ticks=cticks, extend=_ext)
-    _cb.set_label(units_label, labelpad=CBAR_LABELPAD)
+    fig.colorbar(plt.cm.ScalarMappable(norm=norm, cmap="viridis"),
+                 cax=cax, label=units_label, ticks=cticks)
     fig.get_layout_engine().set(rect=(0, 0, 0.88, 1))
     ax.set_xlim(FULL_X[0], FULL_X[-1]) if FULL_DOMAIN else ax.set_xlim(x[0], x[-1])
     if mode == "xz":
         ax.set_ylim(40.0, 0.0)          # 0 (surface) top, 40 (bed) bottom
         ax.set_yticks(np.arange(0, 41, 5))
-        ax.set_aspect(XZ_ASPECT, adjustable="box")
     else:
         if FULL_DOMAIN:
             ax.set_ylim(FULL_Y[0], FULL_Y[-1])
@@ -266,35 +276,24 @@ def main():
     ny, nx = len(y), len(x)
     print(f"grid {nx} x {ny}   velocity z: {len(z_vel)} levels   "
           f"tracer z: {len(z_tr)} levels ({(z_tr[-1]-z_tr[0])/(len(z_tr)-1):.3f} m)", flush=True)
-    pdp, pvl = azmp_profile(AZMP_CSV, NUTRIENT)
-    C0, depth_equiv = build_initial_field(z_tr, pdp, pvl, ny, nx)
-    print(f"IC {NUTRIENT}: {C0.min():.3f} .. {C0.max():.3f}", flush=True)
-    lab = "Nitrate (mmol m$^{-3}$)"; nut = "Nitrate"; fp = "nitrate"
+    C0, oil = build_oil_field(x, y, z_tr)
+    print(f"oil: r={OIL_RADIUS} m at ({OIL_CX:.1f}, {OIL_CY:.1f}) bearing {BEARING}", flush=True)
+    print(f"     {oil['conc_gm3']:.1f} g/m3 in surface cell = {oil['areal_gm2']:.2f} g/m2", flush=True)
+    print(f"     {oil['frac_in_grid']*100:.1f}% of disc inside grid, "
+          f"{oil['mass_in_grid_kg']:.2f} of {OIL_MASS_KG} kg", flush=True)
+    print(f"     vertical mixing: {'ON (case 2)' if VERTICAL_MIX else 'OFF (case 1, w=0)'}", flush=True)
+    lab = "Oil (g m$^{-2}$)" if not VERTICAL_MIX else "Oil (g m$^{-3}$)"
+    nut = "Oil"; fp = f"oil_{BEARING}"
     # NUTRIENT stays "nitrate" for the AZMP column lookup; only display/filenames change
-    jobs = [("xz", 56.0, f"{fp}_xz_y56.gif",
-             f"{nut}  |  vertical X-Z slice at y = 56 m (centre - 4 m, pile edge)"),
-            ("xz", 58.0, f"{fp}_xz_y58.gif",
-             f"{nut}  |  vertical X-Z slice at y = 58 m (centre - 2 m)"),
-            ("xz", 60.0, f"{fp}_xz_y60.gif",
-             f"{nut}  |  vertical X-Z slice at y = 60 m (centre, through monopile)"),
-            ("xz", 62.0, f"{fp}_xz_y62.gif",
-             f"{nut}  |  vertical X-Z slice at y = 62 m (centre + 2 m)"),
-            ("xz", 64.0, f"{fp}_xz_y64.gif",
-             f"{nut}  |  vertical X-Z slice at y = 64 m (centre + 4 m, pile edge)"),
-            ("xy", float(z_tr[-1]), f"{fp}_xy_d00_surface.gif",
-             f"{nut}  |  horizontal X-Y plane at z = 0 m (surface)"),
-            ("xy", 10.0, f"{fp}_xy_d10_subsurface.gif",
-             f"{nut}  |  horizontal X-Y plane at z = 10 m (subsurface)"),
-            ("xy", 0.0, f"{fp}_xy_d20_middle.gif",
-             f"{nut}  |  horizontal X-Y plane at z = 20 m (middle)"),
-            ("xy", -10.0, f"{fp}_xy_d30_subbottom.gif",
-             f"{nut}  |  horizontal X-Y plane at z = 30 m (sub-bottom)"),
-            ("xy", float(z_tr[0]), f"{fp}_xy_d40_bottom.gif",
-             f"{nut}  |  horizontal X-Y plane at z = 40 m (bottom)")]
+    jobs = [("xy", float(z_tr[-1]), f"{fp}_xy_z0_surface.gif",
+             f"{nut}  |  X-Y plane at z = 0 m (surface), spill {BEARING} of monopile")]
     import time
     CACHE = "slabs_cache"
+    import hashlib
+    ich = hashlib.md5(C0.tobytes()).hexdigest()[:12]
     sig = "|".join([VEL_DIR, str(TRACER_NZ), TIMESTEPS[0], TIMESTEPS[-1],
-                    str(len(TIMESTEPS))] + [f"{m}:{sv}" for m, sv, _, _ in jobs])
+                    str(len(TIMESTEPS)), ich, str(VERTICAL_MIX)]
+                   + [f"{m}:{sv}" for m, sv, _, _ in jobs])
     sigf = os.path.join(CACHE, "sig.txt")
     all_slabs = None
     if os.path.exists(sigf) and open(sigf).read() == sig:
@@ -314,6 +313,11 @@ def main():
             np.save(os.path.join(CACHE, f"arr_{k}.npy"), np.stack(s))
         open(sigf, "w").write(sig)
         print(f"  cached slabs to {CACHE}/ ({time.time()-t0:.0f}s)", flush=True)
+    if not VERTICAL_MIX:
+        # case 1: all oil in one layer, so g/m3 * dz is exact areal density.
+        # case 2 spreads vertically and needs a column integral, not a slice.
+        _dz = float(z_tr[1] - z_tr[0])
+        all_slabs = [[s * _dz for s in sl] for sl in all_slabs]
     for (mode, sv, fn, ttl), slabs in zip(jobs, all_slabs):
         t0 = time.time()
         print(f"  {fn}", flush=True)
