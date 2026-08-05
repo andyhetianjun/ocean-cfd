@@ -18,7 +18,7 @@ XX, YY = np.meshgrid(xi, yi)
 cyl_x, cyl_y, cyl_r = 5.0, 2.0, 0.25
 SWL = 0.80
 
-VMIN, VMAX = -0.025, 0.025
+VMIN, VMAX = -0.007, 0.007
 LEVELS = np.linspace(VMIN, VMAX, 51)
 
 times = sorted([d for d in os.listdir(TASK1_DIR) if d.replace('.','').isdigit()], key=float)
@@ -41,7 +41,7 @@ for t in times:
 
     fig, ax = plt.subplots(figsize=(12, 3))
     cf = ax.contourf(XX, YY, diff, levels=LEVELS, cmap='RdBu_r', vmin=VMIN, vmax=VMAX, extend='both')
-    cbar = plt.colorbar(cf, ax=ax, ticks=[-0.025, -0.0125, 0, 0.0125, 0.025])
+    cbar = plt.colorbar(cf, ax=ax, ticks=[-0.007, -0.0035, 0, 0.0035, 0.007])
     cbar.set_label('Δ Surface Elevation (m)')
 
     theta = np.linspace(0, 2*np.pi, 100)

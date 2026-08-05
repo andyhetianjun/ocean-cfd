@@ -52,3 +52,9 @@ log.*
 # Binned velocity fields (regenerable via extract_timeseries_fine.py, ~42 GB)
 velocity_*/
 *.npz
+
+# ParaView frame exports, regenerable and only useful as GIF input
+**/surface/frames.*.png
+**/velocity/frames.*.png
+diff_frames*/
+
