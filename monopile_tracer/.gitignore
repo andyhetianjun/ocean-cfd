@@ -17,3 +17,6 @@ slabs_cache/
 # editor and backup files
 *.bak*
 *.prefix
+
+# README preview stills are small and worth tracking
+!**/results/preview_*.png
