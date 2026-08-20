@@ -59,36 +59,34 @@ neighbour.
 
 BOUNDARY CONDITIONS
 -------------------
-Three separate issues were found and resolved. All three were caught by
-the running mass total printed every 20 steps, not by looking at the
-figures.
+The semi-Lagrangian step traces each cell back to where its water came
+from one timestep earlier. Departure points that fall outside the domain
+need explicit handling, and each face is treated differently.
 
-1. Inlet at x = 0.
-   Departure points leaving through the inlet were clipped back onto the
-   boundary, so those cells re-sampled themselves and held their value
-   for the whole run - a permanent source. An early r = 40 m W case grew
-   from 34 kg to 257 kg.
-   Fixed: C[outside] = 0.0 where the departure point has x < xmin.
-   Present in all four scripts.
+Inlet at x = 0.
+  Disc cases: tracer entering through the inlet is set to zero, since a
+  finite spill has nothing upstream of it.
+  Full-domain cases: the inlet holds its initial value, so the sheet is
+  continuous. Without this the sheet drains from x = 0 at 0.5 m/s and the
+  pile, at x = 40, sits inside the drained region within about 80
+  seconds.
 
-2. Free surface.
-   Where vertical velocity is downward, the departure point lies above
-   the free surface. Clipping returned it to the surface cell, which then
-   re-sampled itself while the same oil had already been carried
-   downward - so the tracer was duplicated. About 57 percent of surface
-   cells have downward w, with a maximum of 0.10 m/s against a cell
-   height of 0.265 m, so this fired on most of the surface every step.
-   W with no buoyancy gained 54 percent; the full domain gained 15.
-   Fixed: departure points are reflected at the surface and bed rather
-   than clipped, which is the correct treatment for a no-flux boundary.
-   Present only in the two w_on scripts. The w_off cases have no vertical
-   displacement, so there is nothing to reflect.
+Side walls at y = 0 and y = 120.
+  Clipped. These are slip or symmetry boundaries in the LES, so nothing
+  crosses them and clipping approximates a reflecting condition well
+  enough at this resolution.
 
-3. Full-domain inlet - not a fault.
-   For the full-domain cases the inlet deliberately holds its initial
-   value, so the sheet is continuous. Without it the sheet drains from
-   x = 0 at 0.5 m/s and the pile, at x = 40, sits inside the drained
-   region within about 80 seconds.
+Free surface and bed.
+  Reflected, not clipped. Where vertical velocity is downward, the
+  departure point lies above the free surface; the parcel actually came
+  from just below it. Clipping would return the point to the surface cell
+  itself, which duplicates tracer wherever there is downwelling - about
+  57 percent of surface cells, with vertical displacements up to 0.10 m
+  against a cell height of 0.265 m. Reflection is the correct treatment
+  for a no-flux boundary and conserves mass.
+
+  This matters only when VERTICAL_MIX is on. The w_off cases have no
+  vertical displacement, so their scripts have no reflection.
 
 MASS CONSERVATION
 -----------------
@@ -101,7 +99,6 @@ divergence-free, so some drift is expected even with correct boundaries.
   Full domain, buoyancy   flat to 0.1 percent
   Full domain, no buoy.   +4 percent over the run
 
-Before the surface fix the two no-buoyancy cases were +54 and +15 percent.
 
 The nitrate animations in ../tracer_transport/ use the same routine with
 vertical velocity active and drift 1.6 percent. The effect is much

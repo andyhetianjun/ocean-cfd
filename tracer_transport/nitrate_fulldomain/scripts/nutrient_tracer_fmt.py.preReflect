@@ -137,9 +137,7 @@ def evolve(C0, x, y, z_vel, z_tr, jobs):
         u, v, w = velocity_on_tracer_z(u, v, w, z_vel, z_tr)
         Xd = np.clip(X3 - u*np.float32(DT_S), xmin, xmax)
         Yd = np.clip(Y3 - v*np.float32(DT_S), ymin, ymax)
-        Zd_raw = Z3 - w*np.float32(DT_S)
-        Zd = np.where(Zd_raw > zmax, 2*zmax - Zd_raw, Zd_raw)
-        Zd = np.where(Zd < zmin, 2*zmin - Zd, Zd).astype(np.float32)
+        Zd = np.clip(Z3 - w*np.float32(DT_S), zmin, zmax)
         C = _trilinear_interpolate(x, y, z_tr, C, Xd, Yd, Zd)
         for lst, s in zip(slabs, grab(C)):
             lst.append(s.astype(np.float32))

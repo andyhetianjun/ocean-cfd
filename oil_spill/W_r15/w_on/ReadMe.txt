@@ -32,8 +32,6 @@ maximum possible surface clearing.
 
 Mass runs 10.04 to 10.64 kg, about +6 percent.
 
-Before the surface reflection fix this case reached 15.4 kg, +54 percent.
-The pre-fix output is kept in archive/ for comparison.
 
 BOUNDARY CODE
   Inlet fix present. Surface reflection present.

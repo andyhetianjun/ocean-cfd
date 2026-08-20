@@ -41,8 +41,6 @@ Mass runs 571 to 594 kg, about +4 percent. Some increase is expected here
 by design, since the inlet supplies fresh oil continuously while only
 what reaches x = 600 leaves.
 
-Before the surface reflection fix this case ran 585 to 671 kg, +15
-percent. The pre-fix output is kept in archive/ for comparison.
 
 BOUNDARY CODE
   Inlet holds its value (by design). Surface reflection present.
