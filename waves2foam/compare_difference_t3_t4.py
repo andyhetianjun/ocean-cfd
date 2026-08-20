@@ -6,9 +6,9 @@ import matplotlib.pyplot as plt
 from scipy.interpolate import griddata
 import os
 
-TASK3_DIR = "/shared_folder/andyhe/project/waves2foam/task3_current_nocylinder/postProcessing/sampleSurface"
-TASK4_DIR = "/shared_folder/andyhe/project/waves2foam/task4_cylinder_current/postProcessing/sampleSurface"
-OUT_DIR = "/shared_folder/andyhe/project/waves2foam/diff_frames_t3_t4"
+TASK3_DIR = "/shared_folder/andyhe/project/ocean-cfd/waves2foam/task3_current_nocylinder/postProcessing/sampleSurface"
+TASK4_DIR = "/shared_folder/andyhe/project/ocean-cfd/waves2foam/task4_cylinder_current/postProcessing/sampleSurface"
+OUT_DIR = "/shared_folder/andyhe/project/ocean-cfd/waves2foam/diff_frames_t3_t4"
 os.makedirs(OUT_DIR, exist_ok=True)
 
 xi = np.linspace(0, 20, 200)

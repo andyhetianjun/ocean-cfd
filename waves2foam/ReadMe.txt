@@ -45,9 +45,13 @@ CONTENTS
   compare_difference_t3_t4.py builds task3 vs task4 difference animation
   downloadFromNibi.sh         pulls case output from the Nibi cluster
 
-  parameter_study/            wave parameter sweep, see sweep_results.txt
-  legacy_olaflow_monopile/    earlier olaFlow attempt, kept for reference
-  regularWave/, squarePile/   reference cases, not tracked
+  parameter_study/            wave parameter sweep. See its MANIFEST.md for
+                              the case list and sweep_results.txt for the
+                              force and transmission numbers.
+  archive/                    superseded work, kept for reference:
+                                legacy_olaflow_monopile/  earlier olaFlow attempt
+                                parameter_study_archive/  sweep figures
+  regularWave/, squarePile/   reference cases, not mine, not tracked
 
 WORKFLOW
 

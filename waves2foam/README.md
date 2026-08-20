@@ -25,9 +25,11 @@ Tracer animations coming once those runs finish.
 | | |
 |---|---|
 | `task1_regularFlume/` -> `task4_cylinder_current/` | the OpenFOAM cases |
-| `parameter_study/` | wave parameter sweep |
-| `tracer-transport/` | velocity extraction and the tracer pipeline |
-| `legacy_olaflow_monopile/` | an earlier olaFlow attempt, kept for reference |
+| `compare_difference*.py` | difference animations between task pairs |
+| `parameter_study/` | wave parameter sweep, with its own MANIFEST |
+| `archive/` | superseded cases and figures |
+
+The tracer work lives in `../monopile_tracer/` at the repository root.
 
 Mesh files, `processor*/`, and the numeric time directories are all gitignored since they are big and regenerable. Run `blockMesh` and `decomposePar` to get them back.
 
