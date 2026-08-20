@@ -1,0 +1,19 @@
+# velocity data and symlinks to it
+data/
+**/data/
+# advection caches
+slabs_cache/
+**/slabs_cache/
+*.npy
+*.npz
+# rendered output
+*.gif
+*.png
+*.mp4
+# logs
+*.log
+# csv data
+*.csv
+# editor and backup files
+*.bak*
+*.prefix
