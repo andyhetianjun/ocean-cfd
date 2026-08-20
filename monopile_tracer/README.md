@@ -47,32 +47,32 @@ regular grid binned out of it by the scripts in `scripts/`.
 All five scripts do the same job with different windows and resolutions. They
 read the decomposed OpenFOAM output in parallel, bin cell values onto a
 regular grid, and write one `npz` per timestep. All reuse
-`velocity_450_cache.npz`, which holds the cell centres — the mesh is static,
+`velocity_450_cache.npz`, which holds the cell centres. The mesh is static,
 so they are read once and reused for every timestep.
 
 | Script | Window | Grid |
 |---|---|---|
-| `extract_full_025.py` | 0–600 m | 2400 × 480 × 84 at 0.25 m — **current** |
-| `extract_full.py` | 0–600 m | 1200 × 240 × 84 at 0.5 m |
-| `extract_new.py` | 0–290 m, y 15–115 | 1160 × 400 × 84 |
-| `extract_resolved.py` | 20–290 m | 1080 × 400 × 84 |
-| `extract_resolved_x0.py` | 0–290 m | 1160 × 400 × 84 |
+| `extract_full_025.py` | 0-600 m | 2400 × 480 × 84 at 0.25 m, **current** |
+| `extract_full.py` | 0-600 m | 1200 × 240 × 84 at 0.5 m |
+| `extract_new.py` | 0-290 m, y 15-115 | 1160 × 400 × 84 |
+| `extract_resolved.py` | 20-290 m | 1080 × 400 × 84 |
+| `extract_resolved_x0.py` | 0-290 m | 1160 × 400 × 84 |
 
 The progression runs from narrow and coarse to full-domain and fine. The later
 scripts exist because each study needed more of the domain than the one before
 it.
 
 Empty bins are filled by nearest neighbour. At 0.25 m about 60% of cells are
-filled this way, which matters for any quantity involving a spatial derivative
-— vorticity in particular is noisier than one computed on the native mesh.
+filled this way, which matters for any quantity involving a spatial derivative.
+Vorticity in particular is noisier than one computed on the native mesh.
 
 ## Resolution limit
 
-The LES mesh is refined out to x ≈ 290 m and coarsens to 1–3 m beyond. Past
+The LES mesh is refined out to x ≈ 290 m and coarsens to 1-3 m beyond. Past
 roughly x = 350 m the figures show large-scale displacement of tracer rather
 than resolved turbulent filaments. Confirmed as expected by Yongxing.
 
-In pile diameters that is a usable range of about x/D = 35 — a reasonable
+In pile diameters that is a usable range of about x/D = 35, a reasonable
 near-to-intermediate wake, but not a far-wake study.
 
 ## The advection scheme
@@ -91,7 +91,7 @@ Boundary treatment differs by face, and matters more than it looks:
 | Face | Treatment |
 |---|---|
 | Inlet | zero inflow for a finite release; holds its initial value for a continuous one |
-| Sides | clipped — they are no-flux in the LES, so this is adequate |
+| Sides | clipped, since they are no-flux in the LES, so this is adequate |
 | Surface and bed | **reflected, not clipped** |
 
 A parcel whose departure point lies above the free surface actually came from
@@ -99,7 +99,7 @@ just below it. Clipping returns it to the surface cell, which duplicates
 tracer wherever there is downwelling. Reflection is the correct treatment for
 a no-flux boundary and conserves mass.
 
-This only matters when vertical velocity is active — but it matters a lot when
+This only matters when vertical velocity is active, but it matters a lot when
 it does. About 57% of surface cells have downward `w`, with displacements up
 to 0.10 m against a cell height of 0.265 m.
 
@@ -110,7 +110,7 @@ to 0.10 m against a cell height of 0.265 m.
 Two limits bracket the behaviour of a surface slick, because the model has no
 rise velocity and cannot say where between them real oil sits.
 
-**With buoyancy imposed** — vertical velocity zeroed — a slick released
+**With buoyancy imposed**, meaning vertical velocity is zeroed, a slick released
 upstream stays at the surface and is stretched and folded by the wake. Its
 footprint grows substantially over the run while total mass is conserved, so
 the apparent fading is dilution rather than loss.
@@ -124,7 +124,7 @@ A slick covering the **entire surface** shows no signature at all under
 horizontal advection alone. That is not a null result to be explained away:
 translating a horizontally uniform field leaves it uniform, so there is no
 edge to distort and no gradient to stretch. The same case with vertical mixing
-active produces the clearest figure in the set — the wake reads as a depletion
+active produces the clearest figure in the set. The wake reads as a depletion
 track through an otherwise untouched sheet, widening downstream and breaking
 into discrete vortex structures.
 
@@ -134,12 +134,12 @@ oil's buoyancy, which this model does not represent.
 
 ### Vertical diffusivity
 
-Method implemented following sections 5.1–5.4 of Yongsheng's document:
+Method implemented following sections 5.1-5.4 of Yongsheng's document:
 Reynolds decomposition of vertical velocity and tracer, layer-averaged
-turbulent flux, then a least-squares flux–gradient fit.
+turbulent flux, then a least-squares flux-gradient fit.
 
 A short test run gives `Kz` of order 10⁻³ m²/s, uniform to within a factor of
-two over the water column. **That figure is provisional** — it comes from 30
+two over the water column. **That figure is provisional**, since it comes from 30
 of 352 timesteps and the full runs are still going.
 
 Two things are already clear from the test. Levels near the surface and bed
@@ -152,7 +152,7 @@ question.
 ### Nitrate
 
 Thirteen animations of an AZMP nitrate profile advected through the wake,
-produced to Yongsheng's specification — he chose the nutricline depths and the
+produced to Yongsheng's specification. He chose the nutricline depths and the
 plane list. Interpretation of what they show is his; this repository holds the
 method and the output.
 
@@ -169,7 +169,7 @@ Python environment: `/home/andyhe/tracer_env/bin/python`
 Scripts run from their case folder, not from `scripts/`, because the paths
 inside them are relative.
 
-Advection runs need 20–30 GB at their startup peak and take about seven hours
+Advection runs need 20-30 GB at their startup peak and take about seven hours
 for 352 steps on a 2400 × 480 grid. The machine is shared; check `free -g`
 before launching, since the OOM killer picks the largest process and several
 runs have been lost that way.
@@ -182,7 +182,7 @@ setsid nohup /home/andyhe/tracer_env/bin/python -u scripts/foo.py \
 ```
 
 The shell prints `Done` immediately when you do this. That means detached, not
-finished — use `pgrep` to see what is actually running.
+finished. Use `pgrep` to see what is actually running.
 
 Print a running diagnostic every N steps: a total, a maximum, anything. Three
 separate boundary-condition faults in this code were caught purely because a
