@@ -58,3 +58,11 @@ velocity_*/
 **/velocity/frames.*.png
 diff_frames*/
 
+
+# monopile_tracer subtree
+monopile_tracer/**/data/
+monopile_tracer/**/slabs_cache/
+monopile_tracer/**/results/*.gif
+monopile_tracer/**/archive_preReflect/
+*.npy
+*.preReflect
