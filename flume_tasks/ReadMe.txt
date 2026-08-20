@@ -36,22 +36,28 @@ SHARED SETUP
 
 CONTENTS
 
-  task1_regularFlume/         waves only, empty flume
-  task2_cylinder/             waves + cylinder
-  task3_current_nocylinder/   waves + current
-  task4_cylinder_current/     waves + current + cylinder
+  cases/task1_regularFlume/         waves only, empty flume
+  cases/task2_cylinder/             waves + cylinder
+  cases/task3_current_nocylinder/   waves + current
+  cases/task4_cylinder_current/     waves + current + cylinder
 
-  compare_difference.py       builds task1 vs task2 difference animation
-  compare_difference_t3_t4.py builds task3 vs task4 difference animation
-  downloadFromNibi.sh         pulls case output from the Nibi cluster
+  scripts/compare_difference.py       task1 vs task2 difference animation
+  scripts/compare_difference_t3_t4.py task3 vs task4 difference animation
+  scripts/downloadFromNibi.sh         pulls case output from the Nibi cluster
 
-  parameter_study/            wave parameter sweep. See its MANIFEST.md for
-                              the case list and sweep_results.txt for the
-                              force and transmission numbers.
-  archive/                    superseded work, kept for reference:
-                                legacy_olaflow_monopile/  earlier olaFlow attempt
-                                parameter_study_archive/  sweep figures
-  regularWave/, squarePile/   reference cases, not mine, not tracked
+  results/                          the two difference animations and their
+                                    PNG frame sequences
+
+  The comparison scripts use paths relative to this folder, so run them
+  from here rather than from scripts/:
+
+      /home/andyhe/tracer_env/bin/python scripts/compare_difference.py
+
+  Related work elsewhere in the repository:
+
+      ../parameter_study/    earlier wave sweep on a monopile
+      ../archive/            the pre-waves2Foam olaFlow attempt
+      ../reference/          third-party cases, not mine, not tracked
 
 WORKFLOW
 
