@@ -138,23 +138,38 @@ Method implemented following sections 5.1-5.4 of Yongsheng's document:
 Reynolds decomposition of vertical velocity and tracer, layer-averaged
 turbulent flux, then a least-squares flux-gradient fit.
 
-A short test run gives `Kz` of order 10⁻³ m²/s, uniform to within a factor of
-two over the water column. **That figure is provisional**, since it comes from 30
-of 352 timesteps and the full runs are still going.
+For mode n = 1 over the full 352-step record, bulk `Kz` is 5.7×10⁻³ m²/s,
+or `Kz/(UD)` = 1.4×10⁻³. It is not uniform with depth: about 4.3×10⁻³ near
+the surface, rising to 7.2×10⁻³ at 32 m depth before flattening. R² of the
+flux-gradient fit averages 0.92, so the relation describes this flow well.
 
-Two things are already clear from the test. Levels near the surface and bed
-carry no information, because the cosine initial profile has zero gradient
-there, so they have to be masked rather than reported. And the choice of
-averaging operator matters: a time mean and a layer mean give diffusivities
-differing by a factor of about 1.7. Which one section 5.1 intends is an open
-question.
+The scale-dependence test still needs modes n = 2 and n = 3 before this can
+be quoted as a single coefficient rather than a mode-1 value.
+
+Levels near the surface and bed carry no information, because the cosine
+initial profile has zero gradient there, so they are masked rather than
+reported.
+
+The choice of averaging operator turns out not to matter much. A time mean
+and a layer mean differ by 9% over the full record. On a 30-step test they
+differed by 70%, so the earlier discrepancy was an undersampled time mean
+rather than a real methodological split.
 
 ### Nitrate
 
 Thirteen animations of an AZMP nitrate profile advected through the wake,
 produced to Yongsheng's specification. He chose the nutricline depths and the
-plane list. Interpretation of what they show is his; this repository holds the
-method and the output.
+plane list. Interpretation of the biological significance is his; this
+repository holds the method and the output.
+
+One methodological result did come out of it. The surface boundary treatment
+that mattered so much for the oil cases makes no difference here: reflecting
+instead of clipping left the mass budget unchanged to three decimal places.
+The oil sits entirely in the surface cell, where the boundary acts; the
+nitrate profile is spread through all 100 levels, so only a small fraction is
+ever exposed to it. The 1.6% drift in this case is semi-Lagrangian
+non-conservation in a divergent binned field, not a boundary fault, and there
+is nothing to fix.
 
 ### Vorticity and speed
 
